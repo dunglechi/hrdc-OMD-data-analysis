@@ -384,6 +384,31 @@ with st.sidebar:
         5. Create interactive charts
         6. Get AI recommendations
         """)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Conversational AI Assistant
+    if st.session_state.df_raw is not None:
+        from conversational_ai import initialize_conversational_assistant, create_ai_chat_widget
+        
+        assistant = initialize_conversational_assistant()
+        
+        # Prepare data summary for context
+        data_summary = {
+            'rows': len(st.session_state.df_raw),
+            'columns': len(st.session_state.df_raw.columns),
+            'missing_pct': round((st.session_state.df_raw.isnull().sum().sum() / 
+                                 (len(st.session_state.df_raw) * len(st.session_state.df_raw.columns)) * 100), 2),
+            'has_cleaned_data': st.session_state.df_cleaned is not None
+        }
+        
+        with st.expander("🤖 AI Chat Assistant", expanded=False):
+            create_ai_chat_widget(
+                assistant=assistant,
+                current_page="Home",
+                data_summary=data_summary
+            )
+
 
 # ==================== MAIN CONTENT ====================
 lang = get_lang()
