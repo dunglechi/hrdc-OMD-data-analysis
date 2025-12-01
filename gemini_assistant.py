@@ -19,7 +19,7 @@ def initialize_gemini():
         raise ValueError("GEMINI_API_KEY not found in environment variables")
     
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-pro')
+    model = genai.GenerativeModel('gemini-2.5-flash')
     return model
 
 # Initialize model globally
