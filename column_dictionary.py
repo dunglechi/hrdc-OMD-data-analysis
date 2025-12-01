@@ -29,6 +29,7 @@ class ColumnDictionary:
     def auto_detect_meanings(self) -> Dict[str, Dict[str, Any]]:
         """
         Sử dụng Gemini AI để tự động đoán ý nghĩa tất cả các cột
+        OPTIMIZED: Batch processing - phân tích tất cả cột trong 1 lần gọi API
         
         Returns:
             Dict[column_name, column_info]
@@ -37,15 +38,103 @@ class ColumnDictionary:
             # Fallback: basic inference without AI
             return self._basic_inference()
         
-        for col in self.df.columns:
-            try:
-                col_info = self._infer_single_column(col)
-                self.dictionary[col] = col_info
-            except Exception as e:
-                # Fallback for failed columns
-                self.dictionary[col] = self._basic_column_info(col)
+        try:
+            # Batch inference - all columns at once
+            self.dictionary = self._batch_infer_all_columns()
+        except Exception as e:
+            print(f"Batch inference failed: {e}, falling back to basic inference")
+            self.dictionary = self._basic_inference()
         
         return self.dictionary
+    
+    def _batch_infer_all_columns(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Phân tích TẤT CẢ các cột trong 1 lần gọi API (nhanh hơn nhiều)
+        
+        Returns:
+            Dict[column_name, column_info]
+        """
+        # Prepare summary for all columns
+        columns_data = []
+        
+        for col in self.df.columns:
+            col_data = self.df[col]
+            sample_values = col_data.dropna().head(3).tolist()
+            
+            col_summary = {
+                'name': col,
+                'dtype': str(col_data.dtype),
+                'unique': int(col_data.nunique()),
+                'missing': int(col_data.isnull().sum()),
+                'sample': sample_values
+            }
+            
+            # Add stats for numeric
+            if col_data.dtype in ['int64', 'float64']:
+                col_summary['stats'] = {
+                    'min': float(col_data.min()) if not pd.isna(col_data.min()) else None,
+                    'max': float(col_data.max()) if not pd.isna(col_data.max()) else None,
+                    'mean': float(col_data.mean()) if not pd.isna(col_data.mean()) else None
+                }
+            
+            columns_data.append(col_summary)
+        
+        # Build batch prompt
+        prompt = f"""
+Phân tích TẤT CẢ các cột dữ liệu sau và đoán ý nghĩa:
+
+**Danh sách cột**:
+{json.dumps(columns_data, ensure_ascii=False, indent=2)}
+
+**Yêu cầu**:
+Cho MỖI cột, đoán:
+1. Ý nghĩa tiếng Việt (ngắn gọn, dễ hiểu)
+2. Ý nghĩa tiếng Anh
+3. Category (financial/demographic/behavioral/temporal/identifier/other)
+4. Confidence (0.0-1.0)
+5. Reasoning (ngắn gọn)
+
+**Lưu ý phổ biến**:
+- TKC = Tài Khoản Chính (viễn thông VN)
+- PHONE/SDT = Số điện thoại
+- TINH = Tỉnh/Thành phố
+- NGAY/DATE = Ngày tháng
+- Nếu không chắc → confidence thấp
+
+**Trả về JSON** (object với key là tên cột):
+{{
+    "COLUMN_NAME_1": {{
+        "meaning_vi": "Ý nghĩa tiếng Việt",
+        "meaning_en": "English meaning",
+        "category": "financial",
+        "confidence": 0.95,
+        "reasoning": "Lý do"
+    }},
+    "COLUMN_NAME_2": {{
+        ...
+    }}
+}}
+
+**JSON**:
+"""
+        
+        try:
+            response = self.model.generate_content(prompt)
+            
+            # Extract JSON
+            json_text = self._extract_json(response.text)
+            results = json.loads(json_text)
+            
+            # Add metadata
+            for col, info in results.items():
+                info['user_edited'] = False
+                info['original_ai_meaning'] = info.get('meaning_vi', col)
+            
+            return results
+            
+        except Exception as e:
+            print(f"Error in batch inference: {e}")
+            raise
     
     def _infer_single_column(self, column: str) -> Dict[str, Any]:
         """
