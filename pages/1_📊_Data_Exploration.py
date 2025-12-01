@@ -8,7 +8,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-st.set_page_config(page_title="Data Exploration", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Khám Phá Dữ Liệu", page_icon="📊", layout="wide")
 
 # Check if data exists
 if st.session_state.df_raw is None:
@@ -187,6 +187,31 @@ elif overall_score >= 70:
     st.warning(f"⚠️ Điểm tổng thể: {overall_score:.1f}% - Chất lượng dữ liệu TRUNG BÌNH, cần cải thiện")
 else:
     st.error(f"❌ Điểm tổng thể: {overall_score:.1f}% - Chất lượng dữ liệu KÉM, cần làm sạch")
+
+st.markdown("---")
+
+# AI Data Quality Assessment
+st.markdown("### 🤖 AI Data Quality Assessment")
+st.markdown("Sử dụng Gemini AI để phân tích chất lượng dữ liệu và đưa ra khuyến nghị chuyên gia.")
+
+col1, col2 = st.columns([1, 3])
+
+with col1:
+    if st.button("🚀 Chạy AI Assessment", use_container_width=True, type="primary"):
+        with st.spinner("🤖 AI đang phân tích dữ liệu..."):
+            import sys
+            sys.path.append('..')
+            from gemini_assistant import analyze_data_quality
+            
+            insights = analyze_data_quality(df, lang='vi')
+            st.session_state.ai_insights = insights
+
+with col2:
+    if 'ai_insights' in st.session_state and st.session_state.ai_insights:
+        st.markdown("**💡 AI Insights:**")
+        st.info(st.session_state.ai_insights)
+    else:
+        st.info("👈 Nhấn nút để nhận phân tích từ AI")
 
 st.markdown("---")
 

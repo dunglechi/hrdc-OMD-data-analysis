@@ -8,7 +8,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-st.set_page_config(page_title="Visualization", page_icon="📉", layout="wide")
+st.set_page_config(page_title="Trực Quan Hóa", page_icon="📉", layout="wide")
 
 # Check if data exists
 if st.session_state.df_cleaned is None:

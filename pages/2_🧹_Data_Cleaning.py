@@ -9,7 +9,7 @@ import sys
 sys.path.append('..')
 from data_cleaner import VNPTDataCleaner
 
-st.set_page_config(page_title="Data Cleaning", page_icon="🧹", layout="wide")
+st.set_page_config(page_title="Làm Sạch Dữ Liệu", page_icon="🧹", layout="wide")
 
 # Check if data exists
 if st.session_state.df_raw is None:

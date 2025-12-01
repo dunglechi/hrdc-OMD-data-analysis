@@ -19,7 +19,11 @@ import sys
 sys.path.append('..')
 from translations import get_text, get_lang
 
-st.set_page_config(page_title="AI Analysis", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Phân Tích AI", page_icon="🤖", layout="wide")
+
+# Initialize session state if not exists
+if 'df_cleaned' not in st.session_state:
+    st.session_state.df_cleaned = None
 
 # Check if cleaned data exists
 if st.session_state.df_cleaned is None:

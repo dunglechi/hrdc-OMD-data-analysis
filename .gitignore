@@ -48,3 +48,8 @@ data/analysis_results.json
 
 # Logs
 *.log
+
+# Environment variables
+.env
+*.env
+.env.local

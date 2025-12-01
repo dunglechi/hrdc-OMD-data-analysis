@@ -11,7 +11,7 @@ import sys
 sys.path.append('..')
 from statistical_analyzer import VNPTStatisticalAnalyzer
 
-st.set_page_config(page_title="Statistical Analysis", page_icon="📈", layout="wide")
+st.set_page_config(page_title="Phân Tích Thống Kê", page_icon="📈", layout="wide")
 
 # Check if cleaned data exists
 if st.session_state.df_cleaned is None:
