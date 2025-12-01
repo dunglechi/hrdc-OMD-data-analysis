@@ -1,0 +1,44 @@
+# VNPT Data Cleaning Configuration
+
+# Missing value handling strategies
+missing_value_strategy:
+  SERVICE_CODE: keep_null  # Valid missing - customers without service
+  TIME_START: keep_null    # Valid missing - linked to SERVICE_CODE
+  TIME_END: keep_null      # Valid missing - linked to SERVICE_CODE
+  STAFF_CODE: UNASSIGNED   # Fill with UNASSIGNED for unassigned customers
+  Donvi: forward_fill      # Forward fill, then use PROVINCE_NAME
+  BTS_NAME: UNKNOWN_BTS    # Fill with UNKNOWN_BTS
+
+# TKC Segmentation
+tkc_bins: [0, 1, 5000, 10000, 20000]
+tkc_labels: ['None', 'Low', 'Medium', 'High']
+
+# Churn risk threshold (days)
+churn_risk_days: 30
+
+# Phone number validation
+phone_pattern: '^84\d{9}$'
+
+# Text standardization
+uppercase_columns:
+  - STAFF_CODE
+  - PROVINCE_CODE_INIT
+  - SERVICE_CODE
+  - LIFE_CYCLE_STAT_CD
+
+# Data validation rules
+validation_rules:
+  - name: phone_number_format
+    column: Phone number
+    rule: matches_pattern
+    pattern: '^84\d{9}$'
+    
+  - name: positive_tkc
+    column: TOTAL_TKC
+    rule: greater_than_or_equal
+    value: 0
+    
+  - name: valid_date_range
+    columns: [DATE_ENTER_ACTIVE, ACCT_EXPIRE_DATE]
+    rule: date_order
+    message: "Activation date must be before expiration date"

@@ -1,0 +1,51 @@
+{
+  "original_records": 39928,
+  "cleaned_records": 39928,
+  "records_removed": 0,
+  "missing_values_handled": {
+    "Donvi": {
+      "original": 182,
+      "remaining": 0,
+      "filled": 182
+    },
+    "STAFF_CODE": {
+      "original": 340,
+      "remaining": 0,
+      "filled": 340
+    },
+    "BTS_NAME": {
+      "original": 7,
+      "remaining": 0,
+      "filled": 7
+    },
+    "SERVICE_CODE": {
+      "original": 30377,
+      "remaining": 30377,
+      "filled": 0
+    },
+    "TIME_START": {
+      "original": 30377,
+      "remaining": 30377,
+      "filled": 0
+    },
+    "TIME_END": {
+      "original": 30377,
+      "remaining": 30377,
+      "filled": 0
+    }
+  },
+  "derived_columns_created": [
+    "HAS_SERVICE",
+    "ACCOUNT_AGE",
+    "DAYS_TO_EXPIRE",
+    "CHURN_RISK",
+    "TKC_SEGMENT",
+    "PHONE_VALID"
+  ],
+  "data_quality_metrics": {
+    "service_adoption_rate": "23.9%",
+    "avg_account_age_days": "2274",
+    "high_churn_risk_pct": "90.8%",
+    "avg_tkc": "5734.15"
+  }
+}

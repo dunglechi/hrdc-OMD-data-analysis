@@ -1,0 +1,232 @@
+{
+  "overview": {
+    "total_customers": 39928,
+    "total_columns": 21,
+    "date_range": {
+      "earliest_activation": "2000-04-20 00:00:00",
+      "latest_activation": "2025-05-31 00:00:00",
+      "earliest_expiration": "2021-11-09 00:00:00",
+      "latest_expiration": "2038-01-18 00:00:00"
+    },
+    "data_quality": {
+      "complete_records": 5831,
+      "records_with_missing": 34097
+    }
+  },
+  "tkc_analysis": {
+    "descriptive_stats": {
+      "mean": 5734.145411192647,
+      "median": 2595.01,
+      "std": 6602.8709399140325,
+      "min": 0.0,
+      "max": 20000.0,
+      "q25": 0.0,
+      "q75": 10492.26
+    },
+    "segment_distribution": {
+      "High": 10820,
+      "Low": 7974,
+      "Medium": 6100
+    },
+    "total_tkc_value": 228952957.9781,
+    "customers_with_zero_tkc": 15034,
+    "customers_with_max_tkc": 157
+  },
+  "service_analysis": {
+    "adoption_rate": 0.2392055700260469,
+    "customers_with_service": 9551,
+    "customers_without_service": 30377,
+    "avg_tkc_with_service": 6774.844076997174,
+    "avg_tkc_without_service": 5406.933607620897,
+    "service_codes": {
+      "DE_BASIC": 1370,
+      "MI_D219": 1219,
+      "MI_U1500TGDD": 554,
+      "MI_MECLIP": 347,
+      "MI_TD49_12M": 290,
+      "MI_YOLO100M_": 289,
+      "MED_V2": 281,
+      "MED_V1": 280,
+      "V10K": 264,
+      "MI_NHOM3DICH": 241
+    }
+  },
+  "churn_analysis": {
+    "high_risk_count": 36260,
+    "high_risk_percentage": 0.9081346423562412,
+    "avg_days_to_expire": 27.917902224003207,
+    "expiring_within_7_days": 36067,
+    "expiring_within_30_days": 36260,
+    "already_expired": 35985
+  },
+  "geographic_analysis": {
+    "provinces": {
+      "LÃ o Cai": 39928
+    },
+    "top_bts_stations": {
+      "4G-VBN001M-LCI": 304,
+      "4G-TPO029M-LCI": 266,
+      "4G-BHA025M-LCI": 260,
+      "4G-TPO103M-LCI": 256,
+      "4G-SPA019M-LCI": 247,
+      "4G-MKG036M-LCI": 217,
+      "4G-BTG005M-LCI": 206,
+      "4G-TPO037M-LCI": 200,
+      "4G-BXT001M-LCI": 198,
+      "4G-SPA074M-LCI": 187
+    },
+    "customers_per_province": {
+      "Phone number": {
+        "LÃ o Cai": 39928
+      },
+      "TOTAL_TKC": {
+        "LÃ o Cai": 5734.145411192647
+      }
+    }
+  },
+  "staff_performance": {
+    "total_staff": 57,
+    "avg_customers_per_staff": 700.4912280701755,
+    "top_performers": {
+      "customer_count": {
+        "PHONGLV.LCI": 2163,
+        "BACHLX.LCI": 1440,
+        "DANGHT.LCI": 1424,
+        "HUNGTB.LCI": 1404,
+        "TBHUNG.LCI": 1320,
+        "HUNGDT.LCI": 1307,
+        "HOAPQ.LCI": 1185,
+        "QUANTH.LCI": 1124,
+        "HUYENBT.LCI": 1092,
+        "PHUONGLTA.LCI": 1065
+      },
+      "avg_tkc": {
+        "PHONGLV.LCI": 6235.4,
+        "BACHLX.LCI": 5817.74,
+        "DANGHT.LCI": 6385.41,
+        "HUNGTB.LCI": 5601.37,
+        "TBHUNG.LCI": 6266.64,
+        "HUNGDT.LCI": 5607.65,
+        "HOAPQ.LCI": 5677.16,
+        "QUANTH.LCI": 5703.27,
+        "HUYENBT.LCI": 5828.24,
+        "PHUONGLTA.LCI": 5641.17
+      },
+      "total_tkc": {
+        "PHONGLV.LCI": 13487160.6,
+        "BACHLX.LCI": 8377548.61,
+        "DANGHT.LCI": 9092829.35,
+        "HUNGTB.LCI": 7864321.02,
+        "TBHUNG.LCI": 8271965.24,
+        "HUNGDT.LCI": 7329201.26,
+        "HOAPQ.LCI": 6727435.5,
+        "QUANTH.LCI": 6410471.52,
+        "HUYENBT.LCI": 6364436.17,
+        "PHUONGLTA.LCI": 6007846.29
+      },
+      "service_rate": {
+        "PHONGLV.LCI": 0.29,
+        "BACHLX.LCI": 0.26,
+        "DANGHT.LCI": 0.24,
+        "HUNGTB.LCI": 0.24,
+        "TBHUNG.LCI": 0.28,
+        "HUNGDT.LCI": 0.26,
+        "HOAPQ.LCI": 0.29,
+        "QUANTH.LCI": 0.23,
+        "HUYENBT.LCI": 0.25,
+        "PHUONGLTA.LCI": 0.24
+      }
+    },
+    "unassigned_customers": 340
+  },
+  "temporal_trends": {
+    "monthly_activations": {
+      "2024-06": 424,
+      "2024-07": 507,
+      "2024-08": 873,
+      "2024-09": 2273,
+      "2024-10": 802,
+      "2024-11": 639,
+      "2024-12": 6,
+      "2025-01": 9,
+      "2025-02": 18,
+      "2025-03": 11,
+      "2025-04": 16,
+      "2025-05": 24
+    },
+    "avg_account_age_days": 2274.441845321579,
+    "account_age_distribution": {
+      "4+ years": 23863,
+      "1-2 years": 8483,
+      "2-3 years": 4780,
+      "3-4 years": 2718,
+      "<1 year": 84
+    },
+    "activation_trend": {
+      "last_6_months": 84,
+      "last_12_months": 5602
+    }
+  },
+  "segmentation": {
+    "segment_matrix": {
+      "High_no_service": {
+        "customer_count": 7602,
+        "avg_tkc": 14714.21,
+        "churn_risk_rate": 0.94
+      },
+      "High_with_service": {
+        "customer_count": 3218,
+        "avg_tkc": 16436.45,
+        "churn_risk_rate": 0.81
+      },
+      "Low_no_service": {
+        "customer_count": 6467,
+        "avg_tkc": 2172.27,
+        "churn_risk_rate": 0.95
+      },
+      "Low_with_service": {
+        "customer_count": 1507,
+        "avg_tkc": 2052.38,
+        "churn_risk_rate": 0.91
+      },
+      "Medium_no_service": {
+        "customer_count": 4994,
+        "avg_tkc": 7677.41,
+        "churn_risk_rate": 0.95
+      },
+      "Medium_with_service": {
+        "customer_count": 1106,
+        "avg_tkc": 7885.26,
+        "churn_risk_rate": 0.9
+      }
+    },
+    "high_value_customers": 3218,
+    "at_risk_high_value": 9731
+  },
+  "insights": [
+    {
+      "category": "Service Adoption",
+      "severity": "High",
+      "insight": "Low service adoption rate (23.9%). 76% of customers have no service code.",
+      "recommendation": "Launch targeted campaigns to increase service adoption among existing customers."
+    },
+    {
+      "category": "Churn Risk",
+      "severity": "Critical",
+      "insight": "90.8% of customers are at high churn risk (expiring within 30 days).",
+      "recommendation": "Implement urgent retention campaigns for customers expiring soon."
+    },
+    {
+      "category": "TKC Distribution",
+      "severity": "Medium",
+      "insight": "37.7% of customers have zero TKC value.",
+      "recommendation": "Review TKC allocation strategy to ensure customer engagement."
+    },
+    {
+      "category": "Staff Assignment",
+      "severity": "Medium",
+      "insight": "340 customers are unassigned to any staff member.",
+      "recommendation": "Assign these customers to staff for better account management."
+    }
+  ]
+}
