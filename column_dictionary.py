@@ -133,6 +133,9 @@ Cho MỖI cột, đoán:
             json_text = self._extract_json(response.text)
             results = json.loads(json_text)
             
+            # Post-process: Fix common VNPT terms (hardcoded rules)
+            results = self._apply_vnpt_corrections(results)
+            
             # Add metadata
             for col, info in results.items():
                 info['user_edited'] = False
@@ -143,6 +146,53 @@ Cho MỖI cột, đoán:
         except Exception as e:
             print(f"Error in batch inference: {e}")
             raise
+    
+    def _apply_vnpt_corrections(self, results: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+        """
+        Áp dụng corrections cho các thuật ngữ VNPT phổ biến
+        Override AI nếu sai
+        """
+        VNPT_CORRECTIONS = {
+            'TKC': {
+                'meaning_vi': 'Tài khoản chính',
+                'meaning_en': 'Main account balance',
+                'category': 'financial',
+                'confidence': 1.0,
+                'reasoning': 'Hardcoded VNPT term'
+            },
+            'TOTAL_TKC': {
+                'meaning_vi': 'Tổng số tiền trong tài khoản chính',
+                'meaning_en': 'Total amount in main account',
+                'category': 'financial',
+                'confidence': 1.0,
+                'reasoning': 'Hardcoded VNPT term'
+            },
+            'PHONE': {
+                'meaning_vi': 'Số điện thoại khách hàng',
+                'meaning_en': 'Customer phone number',
+                'category': 'identifier',
+                'confidence': 1.0,
+                'reasoning': 'Hardcoded VNPT term'
+            },
+            'SDT': {
+                'meaning_vi': 'Số điện thoại',
+                'meaning_en': 'Phone number',
+                'category': 'identifier',
+                'confidence': 1.0,
+                'reasoning': 'Hardcoded VNPT term'
+            }
+        }
+        
+        # Apply corrections
+        for col_name, correction in VNPT_CORRECTIONS.items():
+            # Check exact match or contains
+            for col in results.keys():
+                if col.upper() == col_name or col_name in col.upper():
+                    # Override AI inference
+                    results[col] = correction.copy()
+                    print(f"Applied VNPT correction for {col}: {correction['meaning_vi']}")
+        
+        return results
     
     def _infer_single_column(self, column: str) -> Dict[str, Any]:
         """

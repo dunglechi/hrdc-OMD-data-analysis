@@ -101,7 +101,60 @@ if st.session_state.get('show_import', False):
 
 st.markdown("---")
 
-# Column editor
+# Validation Section
+st.markdown("### ✅ Validation - Kiểm Tra Định Nghĩa")
+
+issues = []
+warnings = []
+
+for col, info in col_dict.dictionary.items():
+    # Check confidence
+    if info.get('confidence', 0) < 0.5:
+        issues.append({
+            'column': col,
+            'type': 'low_confidence',
+            'message': f"Confidence rất thấp ({info.get('confidence', 0):.0%})",
+            'suggestion': "Vui lòng kiểm tra và sửa thủ công"
+        })
+    elif info.get('confidence', 0) < 0.7:
+        warnings.append({
+            'column': col,
+            'type': 'medium_confidence',
+            'message': f"Confidence trung bình ({info.get('confidence', 0):.0%})",
+            'suggestion': "Nên kiểm tra lại"
+        })
+    
+    # Check common mistakes - TKC
+    if 'TKC' in col.upper():
+        meaning_lower = info.get('meaning_vi', '').lower()
+        if 'khuyến' in meaning_lower or 'khuyên' in meaning_lower:
+            issues.append({
+                'column': col,
+                'type': 'wrong_meaning',
+                'message': f"❌ SAI: '{info.get('meaning_vi')}' - TKC = Tài khoản chính, KHÔNG phải Tiền khuyến cáo",
+                'suggestion': "Sửa thành: 'Tài khoản chính' hoặc 'Tổng tiền trong tài khoản chính'"
+            })
+
+# Display validation results
+if issues:
+    st.error(f"🚨 Phát hiện {len(issues)} vấn đề NGHIÊM TRỌNG:")
+    for issue in issues:
+        with st.container():
+            st.markdown(f"**{issue['column']}**: {issue['message']}")
+            st.info(f"💡 {issue['suggestion']}")
+    st.warning("⚠️ **KHÔNG THỂ TIẾP TỤC** cho đến khi sửa các vấn đề trên!")
+    
+elif warnings:
+    st.warning(f"⚠️ Có {len(warnings)} cảnh báo:")
+    for warn in warnings:
+        st.markdown(f"- **{warn['column']}**: {warn['message']} - {warn['suggestion']}")
+    st.info("💡 Bạn có thể tiếp tục nhưng nên kiểm tra lại các cột trên")
+    
+else:
+    st.success("✅ **Tất cả định nghĩa đã được kiểm tra và chính xác!**")
+    st.balloons()
+
+st.markdown("---")
 st.markdown("### ✏️ Chỉnh Sửa Ý Nghĩa Các Cột")
 
 # Filter options
