@@ -466,9 +466,24 @@ if uploaded_file is not None:
         with st.spinner("Đang tải dữ liệu..." if lang == 'vi' else "Loading data..."):
             df = pd.read_excel(uploaded_file)
             st.session_state.df_raw = df
-            st.session_state.current_step = 1
+            st.session_state.current_step = 0  # Start at Column Dictionary
         
         st.success(f"✓ Đã tải {len(df):,} dòng dữ liệu" if lang == 'vi' else f"✓ Loaded {len(df):,} rows")
+        
+        # Check if column dictionary exists
+        if 'column_dictionary' not in st.session_state or not st.session_state.column_dictionary:
+            st.warning("⚠️ **Bước quan trọng**: Bạn cần định nghĩa ý nghĩa các cột trước khi phân tích!")
+            st.info("📖 Đang chuyển sang Column Dictionary...")
+            
+            # Show brief preview
+            st.markdown("**Preview dữ liệu:**")
+            st.dataframe(df.head(3), use_container_width=True)
+            
+            # Auto-redirect after 3 seconds
+            import time
+            time.sleep(2)
+            st.switch_page("pages/0_📖_Column_Dictionary.py")
+            st.stop()
         
         # Metrics
         col1, col2, col3, col4 = st.columns(4)
@@ -492,7 +507,7 @@ if uploaded_file is not None:
         with col1:
             if st.button("Bắt đầu phân tích →" if lang == 'vi' else "Start analysis →", 
                         use_container_width=True, type="primary"):
-                st.switch_page("pages/1_📊_Data_Exploration.py")
+                st.switch_page("pages/0_📖_Column_Dictionary.py")
         with col2:
             st.info("👈 Sử dụng menu bên trái để điều hướng" if lang == 'vi' else "👈 Use left menu to navigate")
         

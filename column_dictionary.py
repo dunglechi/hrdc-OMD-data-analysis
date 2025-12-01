@@ -94,12 +94,20 @@ Cho MỖI cột, đoán:
 4. Confidence (0.0-1.0)
 5. Reasoning (ngắn gọn)
 
-**Lưu ý phổ biến**:
-- TKC = Tài Khoản Chính (viễn thông VN)
-- PHONE/SDT = Số điện thoại
-- TINH = Tỉnh/Thành phố
-- NGAY/DATE = Ngày tháng
-- Nếu không chắc → confidence thấp
+**QUAN TRỌNG - Thuật ngữ VNPT Viễn thông**:
+- **TKC** = Tài Khoản Chính (KHÔNG PHẢI "Tiền khuyến cáo")
+- **Total_TKC** = Tổng số tiền trong tài khoản chính
+- **PHONE/SDT** = Số điện thoại khách hàng
+- **TINH** = Tỉnh/Thành phố
+- **NGAY_KICH_HOAT** = Ngày kích hoạt dịch vụ
+- **ACCOUNT_AGE** = Tuổi tài khoản (số ngày từ khi kích hoạt)
+- **SERVICE** = Loại dịch vụ (Data, Voice, SMS...)
+- **ARPU** = Average Revenue Per User (Doanh thu TB/user)
+
+**Lưu ý**:
+- Ưu tiên domain knowledge VNPT trên
+- Nếu không chắc → confidence thấp (<0.7)
+- Reasoning phải giải thích rõ tại sao
 
 **Trả về JSON** (object với key là tên cột):
 {{
