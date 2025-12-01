@@ -29,13 +29,14 @@ except Exception as e:
     print(f"Warning: Could not initialize Gemini: {e}")
     model = None
 
-def analyze_data_quality(df: pd.DataFrame, lang='vi') -> str:
+def analyze_data_quality(df: pd.DataFrame, lang='vi', column_dict=None) -> str:
     """
     Phân tích chất lượng dữ liệu và đưa ra khuyến nghị
     
     Args:
         df: DataFrame cần phân tích
         lang: Ngôn ngữ ('vi' hoặc 'en')
+        column_dict: ColumnDictionary instance (optional)
     
     Returns:
         str: Phân tích chi tiết về chất lượng dữ liệu
@@ -50,6 +51,15 @@ def analyze_data_quality(df: pd.DataFrame, lang='vi') -> str:
     missing_pct = (missing_summary / total_rows * 100).round(2)
     duplicates = df.duplicated().sum()
     
+    # Add column meanings if available
+    column_context = ""
+    if column_dict:
+        column_context = "\n\nÝ nghĩa các cột:\n"
+        for col in df.columns:
+            meaning = column_dict.get_meaning(col, lang)
+            category = column_dict.get_category(col)
+            column_context += f"- {col}: {meaning} ({category})\n"
+    
     # Create context for AI
     context = f"""
     Bạn là chuyên gia phân tích dữ liệu cho VNPT HRDC. Phân tích chất lượng dữ liệu sau:
@@ -57,6 +67,7 @@ def analyze_data_quality(df: pd.DataFrame, lang='vi') -> str:
     - Tổng số dòng: {total_rows:,}
     - Tổng số cột: {total_cols}
     - Số dòng trùng lặp: {duplicates}
+    {column_context}
     
     Các cột thiếu dữ liệu:
     {missing_summary[missing_summary > 0].to_dict()}
@@ -69,7 +80,7 @@ def analyze_data_quality(df: pd.DataFrame, lang='vi') -> str:
     
     Hãy đưa ra:
     1. Đánh giá tổng quan về chất lượng dữ liệu (điểm từ 1-10)
-    2. 3-5 vấn đề quan trọng nhất cần xử lý
+    2. 3-5 vấn đề quan trọng nhất cần xử lý (ưu tiên dựa trên ý nghĩa cột)
     3. Ưu tiên xử lý (P0 = Khẩn cấp, P1 = Cao, P2 = Trung bình)
     4. Khuyến nghị cụ thể cho từng vấn đề
     
