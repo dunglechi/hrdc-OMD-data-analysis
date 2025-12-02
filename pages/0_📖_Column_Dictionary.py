@@ -48,6 +48,22 @@ with col4:
     st.metric("Độ tin cậy TB", f"{stats['avg_confidence']:.0%}",
              help="Độ tin cậy trung bình của AI")
 
+# Reset button
+st.markdown("---")
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    if st.button("🔄 Reset & Chạy Lại AI (Áp dụng code mới)", use_container_width=True, type="secondary"):
+        # Clear old dictionary
+        if 'column_dictionary' in st.session_state:
+            del st.session_state.column_dictionary
+        if 'column_dict_obj' in st.session_state:
+            del st.session_state.column_dict_obj
+        
+        st.success("✅ Đã xóa dictionary cũ!")
+        st.info("🔄 Đang chạy lại AI với code mới...")
+        st.rerun()
+
+
 st.markdown("---")
 
 # Action buttons
