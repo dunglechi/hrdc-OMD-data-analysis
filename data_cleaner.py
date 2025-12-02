@@ -157,27 +157,42 @@ class VNPTDataCleaner:
         """Create derived columns for analysis"""
         logger.info("Creating derived columns...")
         
-        # HAS_SERVICE: Boolean flag
-        df['HAS_SERVICE'] = ~df['SERVICE_CODE'].isnull()
-        logger.info(f"HAS_SERVICE: {df['HAS_SERVICE'].sum()} customers with service ({df['HAS_SERVICE'].mean()*100:.1f}%)")
+        # HAS_SERVICE: Boolean flag (check if SERVICE_CODE column exists)
+        if 'SERVICE_CODE' in df.columns:
+            df['HAS_SERVICE'] = ~df['SERVICE_CODE'].isnull()
+            logger.info(f"HAS_SERVICE: {df['HAS_SERVICE'].sum()} customers with service ({df['HAS_SERVICE'].mean()*100:.1f}%)")
+        else:
+            logger.warning("SERVICE_CODE column not found, skipping HAS_SERVICE creation")
+            df['HAS_SERVICE'] = False  # Default to False if column doesn't exist
         
         # ACCOUNT_AGE: Days since activation
         if 'DATE_ENTER_ACTIVE' in df.columns:
+            df['DATE_ENTER_ACTIVE'] = pd.to_datetime(df['DATE_ENTER_ACTIVE'], errors='coerce')
             df['ACCOUNT_AGE'] = (self.today - df['DATE_ENTER_ACTIVE']).dt.days
             logger.info(f"ACCOUNT_AGE: Mean = {df['ACCOUNT_AGE'].mean():.0f} days")
+        else:
+            logger.warning("DATE_ENTER_ACTIVE column not found, skipping ACCOUNT_AGE creation")
         
         # DAYS_TO_EXPIRE: Days until expiration
         if 'ACCT_EXPIRE_DATE' in df.columns:
+            df['ACCT_EXPIRE_DATE'] = pd.to_datetime(df['ACCT_EXPIRE_DATE'], errors='coerce')
             df['DAYS_TO_EXPIRE'] = (df['ACCT_EXPIRE_DATE'] - self.today).dt.days
             logger.info(f"DAYS_TO_EXPIRE: Mean = {df['DAYS_TO_EXPIRE'].mean():.0f} days")
+        else:
+            logger.warning("ACCT_EXPIRE_DATE column not found, skipping DAYS_TO_EXPIRE creation")
+            df['DAYS_TO_EXPIRE'] = 999  # Default to high value if column doesn't exist
         
         # CHURN_RISK: High if expiring within threshold
-        churn_threshold = self.config['churn_risk_days']
-        df['CHURN_RISK'] = df['DAYS_TO_EXPIRE'].apply(
-            lambda x: 'High' if x < churn_threshold else 'Low'
-        )
-        high_risk_count = (df['CHURN_RISK'] == 'High').sum()
-        logger.info(f"CHURN_RISK: {high_risk_count} customers at high risk ({high_risk_count/len(df)*100:.1f}%)")
+        if 'DAYS_TO_EXPIRE' in df.columns:
+            churn_threshold = self.config['churn_risk_days']
+            df['CHURN_RISK'] = df['DAYS_TO_EXPIRE'].apply(
+                lambda x: 'High' if pd.notna(x) and x < churn_threshold else 'Low'
+            )
+            high_risk_count = (df['CHURN_RISK'] == 'High').sum()
+            logger.info(f"CHURN_RISK: {high_risk_count} customers at high risk ({high_risk_count/len(df)*100:.1f}%)")
+        else:
+            logger.warning("DAYS_TO_EXPIRE not available, skipping CHURN_RISK creation")
+            df['CHURN_RISK'] = 'Low'  # Default to Low
         
         # TKC_SEGMENT: Categorize by TOTAL_TKC
         if 'TOTAL_TKC' in df.columns:
@@ -190,6 +205,9 @@ class VNPTDataCleaner:
                 include_lowest=True
             )
             logger.info(f"TKC_SEGMENT distribution:\n{df['TKC_SEGMENT'].value_counts()}")
+        else:
+            logger.warning("TOTAL_TKC column not found, skipping TKC_SEGMENT creation")
+            df['TKC_SEGMENT'] = 'None'  # Default segment
         
         return df
     
