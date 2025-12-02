@@ -5,8 +5,6 @@ Quản lý và chỉnh sửa ý nghĩa các cột
 
 import streamlit as st
 import pandas as pd
-import sys
-sys.path.append('..')
 from column_dictionary import initialize_column_dictionary
 
 st.set_page_config(page_title="Column Dictionary", page_icon="📖", layout="wide")
