@@ -72,6 +72,27 @@ if chart_type == "TKC Distribution":
                 color_discrete_sequence=VNPT_COLORS
             )
             st.plotly_chart(fig, use_container_width=True)
+    
+    # AI Chart Interpretation
+    st.markdown("---")
+    st.markdown("#### 🤖 AI Giải Thích Biểu Đồ")
+    
+    if st.button("🔮 AI Phân Tích TKC Distribution", key="ai_viz_tkc", use_container_width=True):
+        with st.spinner("🤖 AI đang phân tích biểu đồ..."):
+            from gemini_assistant import interpret_chart
+            
+            tkc_data = {
+                'mean': df['TOTAL_TKC'].mean(),
+                'median': df['TOTAL_TKC'].median(),
+                'std': df['TOTAL_TKC'].std(),
+                'min': df['TOTAL_TKC'].min(),
+                'max': df['TOTAL_TKC'].max(),
+                'segments': df['TKC_SEGMENT'].value_counts().to_dict() if 'TKC_SEGMENT' in df.columns else {}
+            }
+            
+            ai_insights = interpret_chart('TKC Distribution Histogram & Pie Chart', tkc_data, 'vi')
+            st.markdown(ai_insights)
+
 
 elif chart_type == "Service Adoption":
     st.markdown("### 📱 Service Adoption")
@@ -97,6 +118,22 @@ elif chart_type == "Service Adoption":
         )
         
         st.plotly_chart(fig, use_container_width=True)
+        
+        # AI Interpretation
+        st.markdown("---")
+        if st.button("🔮 AI Giải Thích Service Adoption", key="ai_viz_service", use_container_width=True):
+            with st.spinner("🤖 AI đang phân tích..."):
+                from gemini_assistant import interpret_chart
+                
+                service_data = {
+                    'with_service': service_counts.get(True, 0),
+                    'without_service': service_counts.get(False, 0),
+                    'adoption_rate': service_counts.get(True, 0) / total * 100
+                }
+                
+                ai_insights = interpret_chart('Service Adoption Bar Chart', service_data, 'vi')
+                st.markdown(ai_insights)
+
 
 elif chart_type == "Churn Risk":
     st.markdown("### ⚠️ Churn Risk Analysis")
