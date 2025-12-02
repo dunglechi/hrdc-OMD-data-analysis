@@ -36,6 +36,64 @@ tab1, tab2, tab3 = st.tabs(["❌ Missing Values", "➕ Derived Columns", "✅ Va
 with tab1:
     st.markdown("#### Chiến Lược Xử Lý Missing Values")
     
+    # Help guide
+    with st.expander("📖 **Hướng Dẫn Chọn Chiến Lược** - Đọc trước khi làm sạch!", expanded=False):
+        st.markdown("""
+        ### 🎯 Chọn Chiến Lược Nào?
+        
+        #### 1️⃣ Keep NULL (Giữ Nguyên)
+        - **Khi nào**: Dữ liệu tùy chọn (Email phụ, Ghi chú)
+        - **Ví dụ**: `EMAIL_PHU` có 60% NULL → Giữ nguyên vì không bắt buộc
+        - **Lưu ý**: Một số hàm sẽ bỏ qua NULL
+        
+        #### 2️⃣ Mode (Giá Trị Phổ Biến Nhất)
+        - **Khi nào**: Phân loại (Tỉnh, Dịch vụ), 1 giá trị chiếm >50%
+        - **Ví dụ**: `TINH` → Hà Nội chiếm 45% → Điền "Hà Nội" vào NULL
+        - **Lưu ý**: Không dùng cho số liên tục (TKC, Tuổi...)
+        
+        #### 3️⃣ Forward Fill (Điền Từ Trên Xuống)
+        - **Khi nào**: Dữ liệu theo thời gian, giá trị ổn định
+        - **Ví dụ**: `TKC` theo ngày → NULL = copy từ ngày trước
+        - **Lưu ý**: Phải sort data trước! Dòng đầu NULL → vẫn NULL
+        
+        #### 4️⃣ Custom Value (Tùy Chỉnh)
+        - **Khi nào**: Có giá trị mặc định hợp lý
+        - **Ví dụ**: `TKC` NULL = chưa nạp → Điền 0đ
+        - **Lưu ý**: Phải document tại sao chọn giá trị này
+        
+        #### 5️⃣ Mean/Median (Trung Bình/Trung Vị)
+        - **Khi nào**: Số liệu liên tục, phân bố chuẩn
+        - **Ví dụ**: `TUOI` NULL → Điền mean = 35 tuổi
+        - **Lưu ý**: Mean nhạy với outliers, Median ổn định hơn
+        
+        ---
+        
+        ### 💼 Ví Dụ Thực Tế VNPT
+        
+        | Cột | % NULL | Chiến lược | Lý do |
+        |-----|--------|------------|-------|
+        | `TKC` | 12% | Custom = 0 | NULL = chưa nạp tiền |
+        | `TINH` | 5% | Mode | Hà Nội chiếm 45% |
+        | `EMAIL_PHU` | 60% | Keep NULL | Không bắt buộc |
+        | `NGAY_KICH_HOAT` | 3% | Forward Fill | Theo thời gian |
+        | `TUOI` | 8% | Median | Tránh outliers |
+        
+        ---
+        
+        ### ⚠️ Lưu Ý Quan Trọng
+        
+        ✅ **DO**:
+        - Phân tích phân bố trước khi chọn
+        - Test nhiều chiến lược, so sánh kết quả
+        - Document quyết định
+        
+        ❌ **DON'T**:
+        - Dùng 1 chiến lược cho tất cả cột
+        - Điền bừa không suy nghĩ
+        - Quên kiểm tra sau khi fill
+        """)
+    
+    
     # Get columns with missing values
     missing_cols = df.columns[df.isnull().any()].tolist()
     
@@ -59,14 +117,16 @@ with tab1:
                         f"Strategy_{col}",
                         ["Keep NULL", "Mean", "Median", "Zero", "Custom Value"],
                         key=f"strategy_{col}",
-                        label_visibility="collapsed"
+                        label_visibility="collapsed",
+                        help="Mean: Trung bình | Median: Trung vị | Zero: Điền 0"
                     )
                 else:
                     strategy = st.selectbox(
                         f"Strategy_{col}",
                         ["Keep NULL", "Mode", "Forward Fill", "Custom Value"],
                         key=f"strategy_{col}",
-                        label_visibility="collapsed"
+                        label_visibility="collapsed",
+                        help="Mode: Giá trị phổ biến nhất | Forward Fill: Copy từ trên xuống"
                     )
                 
                 strategies[col] = strategy
