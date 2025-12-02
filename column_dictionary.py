@@ -114,7 +114,8 @@ Cho MỖI cột, bạn PHẢI:
 - **ARPU** = Average Revenue Per User (Doanh thu trung bình/user)
 - **STAFF_CODE** = Mã nhân viên quản lý
 - **CHURN** = Rời mạng (khách hàng ngừng sử dụng dịch vụ)
-- **Domvi** = Có thể là "Doanh thu vi tính" hoặc domain-specific term
+- **Domvi/Donvi** = Vị trí Anten BTS (BTS's Location) - "Domvi" là lỗi chính tả của "Donvi"
+
 
 **CATEGORY**:
 - financial: Tiền, doanh thu, chi phí, TKC...
@@ -229,6 +230,20 @@ Giải thích TẠI SAO bạn đoán như vậy:
                 'category': 'identifier',
                 'confidence': 1.0,
                 'reasoning': 'Hardcoded VNPT term'
+            },
+            'DOMVI': {
+                'meaning_vi': 'Vị trí Anten BTS (Đơn vị - lỗi chính tả)',
+                'meaning_en': "BTS's Location (Base Transceiver Station)",
+                'category': 'demographic',
+                'confidence': 1.0,
+                'reasoning': 'Hardcoded VNPT term - Domvi = Donvi (typo) = BTS location'
+            },
+            'DONVI': {
+                'meaning_vi': 'Vị trí Anten BTS (Đơn vị)',
+                'meaning_en': "BTS's Location (Base Transceiver Station)",
+                'category': 'demographic',
+                'confidence': 1.0,
+                'reasoning': 'Hardcoded VNPT term - BTS location/unit'
             }
         }
         
