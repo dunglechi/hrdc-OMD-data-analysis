@@ -81,46 +81,95 @@ class ColumnDictionary:
         
         # Build batch prompt
         prompt = f"""
-Phân tích TẤT CẢ các cột dữ liệu sau và đoán ý nghĩa:
+Bạn là chuyên gia phân tích dữ liệu VNPT Viễn thông. Phân tích TẤT CẢ các cột dữ liệu sau:
 
 **Danh sách cột**:
 {json.dumps(columns_data, ensure_ascii=False, indent=2)}
 
-**Yêu cầu**:
-Cho MỖI cột, đoán:
-1. Ý nghĩa tiếng Việt (ngắn gọn, dễ hiểu)
-2. Ý nghĩa tiếng Anh
-3. Category (financial/demographic/behavioral/temporal/identifier/other)
-4. Confidence (0.0-1.0)
-5. Reasoning (ngắn gọn)
+**YÊU CẦU QUAN TRỌNG**:
+Cho MỖI cột, bạn PHẢI:
 
-**QUAN TRỌNG - Thuật ngữ VNPT Viễn thông**:
-- **TKC** = Tài Khoản Chính (KHÔNG PHẢI "Tiền khuyến cáo")
+1. **Phân tích tên cột**: 
+   - Nếu là viết tắt → giải thích đầy đủ (VD: "Domvi" có thể là "Doanh thu vi tính" hoặc "Domain VI")
+   - Nếu là tiếng Anh → dịch sang tiếng Việt
+   - Nếu là tiếng Việt → giải thích rõ ràng
+
+2. **Phân tích dữ liệu mẫu**:
+   - Xem sample values để hiểu cột chứa gì
+   - Xem dtype, min/max, unique để xác định loại dữ liệu
+
+3. **Đưa ra ý nghĩa CỤ THỂ**:
+   - KHÔNG được chỉ lặp lại tên cột
+   - PHẢI giải thích cột này chứa thông tin gì
+   - VD: Thay vì "Domvi" → "Doanh thu vi tính" hoặc "Tổng doanh thu từ dịch vụ data"
+
+**DOMAIN KNOWLEDGE - VNPT Viễn thông**:
+- **TKC** = Tài Khoản Chính (số dư tài khoản, KHÔNG phải "Tiền khuyến cáo")
 - **Total_TKC** = Tổng số tiền trong tài khoản chính
-- **PHONE/SDT** = Số điện thoại khách hàng
-- **TINH** = Tỉnh/Thành phố
-- **NGAY_KICH_HOAT** = Ngày kích hoạt dịch vụ
+- **PHONE/SDT** = Số điện thoại khách hàng (identifier)
+- **TINH/PROVINCE** = Tỉnh/Thành phố
+- **NGAY_KICH_HOAT/DATE_ENTER_ACTIVE** = Ngày kích hoạt dịch vụ
 - **ACCOUNT_AGE** = Tuổi tài khoản (số ngày từ khi kích hoạt)
-- **SERVICE** = Loại dịch vụ (Data, Voice, SMS...)
-- **ARPU** = Average Revenue Per User (Doanh thu TB/user)
+- **SERVICE** = Loại dịch vụ (Data, Voice, SMS, VAS...)
+- **ARPU** = Average Revenue Per User (Doanh thu trung bình/user)
+- **STAFF_CODE** = Mã nhân viên quản lý
+- **CHURN** = Rời mạng (khách hàng ngừng sử dụng dịch vụ)
+- **Domvi** = Có thể là "Doanh thu vi tính" hoặc domain-specific term
 
-**Lưu ý**:
-- Ưu tiên domain knowledge VNPT trên
-- Nếu không chắc → confidence thấp (<0.7)
-- Reasoning phải giải thích rõ tại sao
+**CATEGORY**:
+- financial: Tiền, doanh thu, chi phí, TKC...
+- demographic: Tuổi, giới tính, địa chỉ, tỉnh...
+- behavioral: Hành vi sử dụng, service, churn...
+- temporal: Ngày tháng, thời gian
+- identifier: ID, phone, mã KH...
+- other: Không thuộc các loại trên
+
+**CONFIDENCE**:
+- 1.0: Chắc chắn 100% (hardcoded terms hoặc rõ ràng)
+- 0.8-0.9: Rất chắc (tên cột + sample values khớp)
+- 0.6-0.7: Khá chắc (tên cột gợi ý, sample values hợp lý)
+- 0.4-0.5: Không chắc (tên cột mơ hồ, sample values không rõ)
+- <0.4: Đoán mò (không đủ thông tin)
+
+**REASONING**:
+Giải thích TẠI SAO bạn đoán như vậy:
+- Dựa vào tên cột (viết tắt gì, nghĩa gì)
+- Dựa vào sample values (giá trị như thế nào)
+- Dựa vào dtype, stats (số, text, date...)
+- Dựa vào domain knowledge VNPT
+
+**VÍ DỤ TỐT**:
+{{
+    "Domvi": {{
+        "meaning_vi": "Doanh thu vi tính (doanh thu từ dịch vụ data/internet)",
+        "meaning_en": "Data service revenue",
+        "category": "financial",
+        "confidence": 0.75,
+        "reasoning": "Tên cột 'Domvi' có thể là viết tắt của 'Doanh thu vi tính'. Sample values là số, dtype là float64, có giá trị min/max/mean → khả năng cao là doanh thu. Trong ngành viễn thông, 'vi tính' thường chỉ dịch vụ data/internet."
+    }}
+}}
+
+**VÍ DỤ XẤU** (KHÔNG được làm như này):
+{{
+    "Domvi": {{
+        "meaning_vi": "Domvi",  ← SAI! Chỉ lặp lại tên cột
+        "meaning_en": "Domvi",  ← SAI! Không giải thích
+        "category": "other",
+        "confidence": 0.5,
+        "reasoning": "Unknown"  ← SAI! Không phân tích
+    }}
+}}
 
 **Trả về JSON** (object với key là tên cột):
 {{
     "COLUMN_NAME_1": {{
-        "meaning_vi": "Ý nghĩa tiếng Việt",
-        "meaning_en": "English meaning",
-        "category": "financial",
-        "confidence": 0.95,
-        "reasoning": "Lý do"
+        "meaning_vi": "Ý nghĩa CỤ THỂ, KHÔNG lặp lại tên cột",
+        "meaning_en": "Specific English meaning",
+        "category": "financial|demographic|behavioral|temporal|identifier|other",
+        "confidence": 0.0-1.0,
+        "reasoning": "Giải thích chi tiết dựa trên tên cột, sample values, dtype, domain knowledge"
     }},
-    "COLUMN_NAME_2": {{
-        ...
-    }}
+    ...
 }}
 
 **JSON**:
