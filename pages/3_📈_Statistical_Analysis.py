@@ -45,19 +45,40 @@ st.markdown("### 📊 Chỉ Số Chính")
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
-    st.metric("👥 Tổng Khách Hàng", f"{stats['overview']['total_customers']:,}")
+    st.metric(
+        "👥 Tổng Khách Hàng", 
+        f"{stats['overview']['total_customers']:,}",
+        help="Tổng số khách hàng trong dữ liệu"
+    )
 with col2:
     adoption_rate = stats['service_analysis']['adoption_rate'] * 100
-    st.metric("📱 Service Adoption", f"{adoption_rate:.1f}%")
+    st.metric(
+        "📱 Service Adoption", 
+        f"{adoption_rate:.1f}%",
+        help="Tỷ lệ khách hàng đã kích hoạt dịch vụ (Data, Voice, SMS...)"
+    )
 with col3:
     churn_pct = stats['churn_analysis']['high_risk_percentage'] * 100
-    st.metric("⚠️ High Churn Risk", f"{churn_pct:.1f}%", delta=f"-{100-churn_pct:.1f}%")
+    st.metric(
+        "⚠️ High Churn Risk", 
+        f"{churn_pct:.1f}%", 
+        delta=f"-{100-churn_pct:.1f}%",
+        help="Tỷ lệ khách hàng có nguy cơ rời mạng cao (sắp hết hạn hoặc TKC thấp)"
+    )
 with col4:
     avg_tkc = stats['tkc_analysis']['descriptive_stats']['mean']
-    st.metric("💰 Avg TKC", f"{avg_tkc:,.0f} VNĐ")
+    st.metric(
+        "💰 Avg TKC", 
+        f"{avg_tkc:,.0f} VNĐ",
+        help="Số tiền trung bình trong Tài Khoản Chính của khách hàng"
+    )
 with col5:
     avg_age = stats['temporal_trends']['avg_account_age_days']
-    st.metric("📅 Avg Account Age", f"{avg_age:.0f} days")
+    st.metric(
+        "📅 Avg Account Age", 
+        f"{avg_age:.0f} days",
+        help="Số ngày trung bình từ khi kích hoạt tài khoản đến nay"
+    )
 
 st.markdown("---")
 
@@ -65,13 +86,26 @@ st.markdown("---")
 tab1, tab2, tab3, tab4 = st.tabs(["💰 TKC Analysis", "📱 Service Analysis", "⚠️ Churn Analysis", "👥 Segmentation"])
 
 with tab1:
-    st.markdown("### 💰 Phân Tích TKC (Tiền Khuyến Cáo)")
+    st.markdown("### 💰 Phân Tích TKC (Tài Khoản Chính)")
+    st.caption("TKC = Tài khoản chính - Số tiền khách hàng còn lại trong tài khoản")
     
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("#### Thống Kê Mô Tả")
         desc_stats = stats['tkc_analysis']['descriptive_stats']
+        
+        # Add help expander
+        with st.expander("📖 Giải thích các chỉ số", expanded=False):
+            st.markdown("""
+            - **Mean** (Trung bình): Tổng TKC / Số khách hàng
+            - **Median** (Trung vị): Giá trị ở giữa khi sắp xếp TKC
+            - **Std Dev** (Độ lệch chuẩn): Mức độ phân tán của TKC
+            - **Min**: TKC thấp nhất
+            - **Max**: TKC cao nhất  
+            - **Q25** (Phân vị 25%): 25% khách hàng có TKC ≤ giá trị này
+            - **Q75** (Phân vị 75%): 75% khách hàng có TKC ≤ giá trị này
+            """)
         
         stats_df = pd.DataFrame({
             'Metric': ['Mean', 'Median', 'Std Dev', 'Min', 'Max', 'Q25', 'Q75'],
