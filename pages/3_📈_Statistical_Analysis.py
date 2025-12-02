@@ -140,6 +140,29 @@ with tab1:
     - {stats['tkc_analysis']['customers_with_max_tkc']:,} khách hàng có TKC = 20,000 (max)
     - Tổng giá trị TKC: {stats['tkc_analysis']['total_tkc_value']:,.0f} VNĐ
     """)
+    
+    # AI Analysis
+    st.markdown("---")
+    st.markdown("#### 🤖 AI Business Insights")
+    
+    if st.button("🔮 Phân Tích Bằng Gen AI", key="ai_tkc", use_container_width=True):
+        with st.spinner("🤖 AI đang phân tích..."):
+            from gemini_assistant import interpret_chart
+            
+            # Prepare TKC data summary
+            tkc_summary = {
+                'type': 'TKC Distribution & Segments',
+                'mean': stats['tkc_analysis']['descriptive_stats']['mean'],
+                'median': stats['tkc_analysis']['descriptive_stats']['median'],
+                'segments': stats['tkc_analysis']['segment_distribution'],
+                'zero_tkc': stats['tkc_analysis']['customers_with_zero_tkc'],
+                'max_tkc': stats['tkc_analysis']['customers_with_max_tkc'],
+                'total_value': stats['tkc_analysis']['total_tkc_value']
+            }
+            
+            ai_insights = interpret_chart('TKC Analysis', tkc_summary, 'vi')
+            st.markdown(ai_insights)
+
 
 with tab2:
     st.markdown("### 📱 Phân Tích Service Adoption")
@@ -172,6 +195,25 @@ with tab2:
         st.metric("Customers without Service", f"{stats['service_analysis']['customers_without_service']:,}")
         st.metric("Avg TKC (with service)", f"{stats['service_analysis']['avg_tkc_with_service']:,.0f} VNĐ")
         st.metric("Avg TKC (no service)", f"{stats['service_analysis']['avg_tkc_without_service']:,.0f} VNĐ")
+    
+    # AI Analysis
+    st.markdown("---")
+    if st.button("🔮 AI Phân Tích Service Adoption", key="ai_service", use_container_width=True):
+        with st.spinner("🤖 AI đang phân tích..."):
+            from gemini_assistant import interpret_chart
+            
+            service_summary = {
+                'type': 'Service Adoption Analysis',
+                'adoption_rate': stats['service_analysis']['adoption_rate'],
+                'with_service': stats['service_analysis']['customers_with_service'],
+                'without_service': stats['service_analysis']['customers_without_service'],
+                'avg_tkc_with': stats['service_analysis']['avg_tkc_with_service'],
+                'avg_tkc_without': stats['service_analysis']['avg_tkc_without_service']
+            }
+            
+            ai_insights = interpret_chart('Service Adoption', service_summary, 'vi')
+            st.markdown(ai_insights)
+
 
 with tab3:
     st.markdown("### ⚠️ Phân Tích Churn Risk")
@@ -211,6 +253,38 @@ with tab3:
     - {stats['churn_analysis']['expiring_within_7_days']:,} expiring within 7 days
     - **Action Required**: Urgent retention campaign needed!
     """)
+    
+    # AI Churn Strategy
+    st.markdown("---")
+    if st.button("🔮 AI Chiến Lược Giữ Chân Khách Hàng", key="ai_churn", use_container_width=True, type="primary"):
+        with st.spinner("🤖 AI đang phân tích chiến lược..."):
+            from gemini_assistant import get_ai_response
+            
+            churn_context = {
+                'high_risk_count': stats['churn_analysis']['high_risk_count'],
+                'high_risk_pct': stats['churn_analysis']['high_risk_percentage'],
+                'expiring_7d': stats['churn_analysis']['expiring_within_7_days'],
+                'expiring_30d': stats['churn_analysis']['expiring_within_30_days'],
+                'already_expired': stats['churn_analysis']['already_expired'],
+                'avg_days_to_expire': stats['churn_analysis']['avg_days_to_expire']
+            }
+            
+            question = f"""
+            Phân tích tình hình churn và đưa ra chiến lược giữ chân cụ thể:
+            - {churn_context['high_risk_count']:,} khách hàng nguy cơ cao
+            - {churn_context['expiring_7d']:,} sắp hết hạn trong 7 ngày
+            - {churn_context['expiring_30d']:,} sắp hết hạn trong 30 ngày
+            
+            Hãy đưa ra:
+            1. Root causes (nguyên nhân gốc rễ)
+            2. Immediate actions (7 ngày) - cụ thể, có số liệu
+            3. Short-term strategy (30 ngày)
+            4. Expected ROI và KPIs cần theo dõi
+            """
+            
+            ai_strategy = get_ai_response(question, churn_context, 'vi')
+            st.markdown(ai_strategy)
+
 
 with tab4:
     st.markdown("### 👥 Customer Segmentation")
@@ -240,6 +314,37 @@ with tab4:
         st.success(f"🌟 High Value Customers: {stats['segmentation']['high_value_customers']:,}")
     with col2:
         st.warning(f"⚠️ At-Risk High Value: {stats['segmentation']['at_risk_high_value']:,}")
+    
+    # AI Marketing Strategy
+    st.markdown("---")
+    if st.button("🔮 AI Chiến Lược Marketing Cho Từng Segment", key="ai_segment", use_container_width=True):
+        with st.spinner("🤖 AI đang tạo chiến lược marketing..."):
+            from gemini_assistant import get_ai_response
+            
+            segment_context = {
+                'segment_matrix': stats['segmentation']['segment_matrix'],
+                'high_value': stats['segmentation']['high_value_customers'],
+                'at_risk_high_value': stats['segmentation']['at_risk_high_value']
+            }
+            
+            question = """
+            Tạo chiến lược marketing chi tiết cho TỪNG segment khách hàng.
+            
+            Cho mỗi segment, hãy cung cấp:
+            1. Profile & đặc điểm khách hàng
+            2. Value Proposition (lợi ích chính)
+            3. Channels (SMS, Email, Call...) và lý do
+            4. Offers cụ thể (ưu đãi, khuyến mãi)
+            5. Messaging (nội dung truyền thông)
+            6. Budget allocation (% ngân sách)
+            7. KPIs mục tiêu (conversion, retention rate)
+            
+            Ví dụ campaigns cụ thể cho VNPT.
+            """
+            
+            ai_strategy = get_ai_response(question, segment_context, 'vi')
+            st.markdown(ai_strategy)
+
 
 st.markdown("---")
 
